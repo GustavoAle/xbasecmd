@@ -4,7 +4,6 @@
 	                                 RECOVER [USING <oErr>] <-oErr-> ;;
 	                                 errorBlock( bError )
 #define CRLF (Chr(13)+chr(10))
-#define WM_DROPFILES         563 // 0x0233
 
 FUNCTION Main(cFile)
 	local 	aSeq,;
@@ -22,12 +21,13 @@ FUNCTION Main(cFile)
          lNoGui	:=	.t.
          //load_fromfile(cFile)
 	  Else   
-		 clear();
+		 clear()
+
 		 echo("[ xBase, CA-Clipper and Harbour Command Interpreter ]")
 		 echo("[ Open source. GUI Build: Nov. 5th 2013 ]")
 		 echo("[ Last version: May. 7th 2018 ]")
 		 echo(".")
-		 //printar("hi")
+
 		 output_xReply := "NULL"
 		 i := 0
 
@@ -37,23 +37,13 @@ FUNCTION Main(cFile)
 		 WHILE (!lExit_signal)
 
 			nCurRow = ROW()
-			//SETPOS(nCurRow,0)
-			
-			@ nCurRow, 0 SAY cPrefix GET local_xCom
-			READ
-			
-			@ nCurRow,0 CLEAR TO nCurRow,MAXCOL()
-			SETPOS(nCurRow-1,0)
 
-			//INPUT "--> " TO @local_xCom
-			i++
+			ACCEPT "--> " TO local_xCom
 
-			//local_xCom := __Input("--> ")
-			
 			exec_xCom(local_xCom)
 			local_xCom := space(128)
-			//SETPOS(ROW()+1,0)
-			echo(chr(13))
+			//echo(chr(13))
+
 		 ENDDO
 		 */
 
@@ -70,7 +60,7 @@ FUNCTION echo(input_printchar)
 	endif
 
 	if(valtype(input_printchar) == "C")
-		printc(input_printchar)
+		? input_printchar
 	endif
 
 
@@ -89,7 +79,7 @@ Function exec_xCom(input_xCom)
 		RETURN
 	endif    
 	if type(input_xCom)="U"
-		echo(cPrefix+input_xCom)
+		//echo(cPrefix+input_xCom)
 		Try 
 			output_xReply	:=	&input_xCom
 		Catch oExecErr
@@ -164,6 +154,13 @@ Return
 #include "hbvm.h"
 #include <stdio.h>
 
+HB_FUNC (SCANC){
+	char * out = (char*)hb_param(1,0);
+	int eeee;
+	scanf("%d",&eeee);
+	scanf("%[^\n]s",out);
+
+}
 
 HB_FUNC (PRINTC){
 	char * in = (char*)hb_parc(1);
