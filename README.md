@@ -9,7 +9,7 @@ After installing Harbour compile `main.prg` with as follow
 hbmk2 main.prg
 ```
 
-It generate de executable 'main', if you want to compile to C first just do:
+It generate de executable `main`, if you want to compile to C first just do:
 ```
 harbour main.prg
 ```
