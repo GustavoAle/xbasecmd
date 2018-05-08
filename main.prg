@@ -22,11 +22,12 @@ FUNCTION Main(cFile)
          lNoGui	:=	.t.
          //load_fromfile(cFile)
 	  Else   
-		 CLEAR SCREEN
+		 clear();
 		 echo("[ xBase, CA-Clipper and Harbour Command Interpreter ]")
 		 echo("[ Open source. GUI Build: Nov. 5th 2013 ]")
 		 echo("[ Last version: May. 7th 2018 ]")
 		 echo(".")
+		 //printar("hi")
 		 output_xReply := "NULL"
 		 i := 0
 
@@ -68,8 +69,9 @@ FUNCTION echo(input_printchar)
 		input_printchar := str(input_printchar)
 	endif
 
-	? input_printchar
-
+	if(valtype(input_printchar) == "C")
+		printc(input_printchar)
+	endif
 
 
 RETURN
@@ -77,37 +79,6 @@ RETURN
 FUNCTION clear()
 	CLEAR SCREEN
 RETURN
-/*
-Function xcom(xCom,cParam)
-local aParam:={},i,l,xParam	:=	""
-	msgbox(cParam)
-	for i	:=	1 to len(cParam)
-		if AT(",", cParam) !=0
-			aadd(aParam, LEFT(cParam, AT(",", cParam) -1))
-			cParam:=substr(cParam, AT(",", cParam) + 1)
-		elseif !empty(cParam)
-			aadd(aParam,cParam)	
-			cParam:=""
-		endif	
-	next i
-
-	For l	:=	1 to len(aParam)
-		xParam	:=	xParam + "," + aParam[l]
-	next l
-
-	if substr(xParam,1,1) = ","
-		xParam:=stuff(xParam,1,1,"")
-	endif
-	
-
-	if !empty(xParam)
-		&xcom(&xParam)
-	else
-		&xcom()
-	endif	
-	
-Return
-*/
 
 Function exec_xCom(input_xCom)
 	local cEc
@@ -194,60 +165,19 @@ Return
 #include <stdio.h>
 
 
+HB_FUNC (PRINTC){
+	char * in = (char*)hb_parc(1);
+
+	printf("\n%s",in);
+
+}
 /*
-HB_FUNC (C_SCAN){
-	char input_[128];
+	Here comes C codes as follow:
 
-	printf("\n--> ");
-	//scanf("%[^\n]s",input_);
-	scanf("%s",input_);
-	hb_retc(input_);
+HB_FUNC(functionname){
+	hb_parnl(i) // for parameters
+	hb_retc(something) //to return something as char
 }
-
-VOID *hDWMAPI = NULL;
-typedef HRESULT (WINAPI * func_DwmExtendFrameIntoClientArea) (HWND, const MARGINS *);
-
-
-//        DwmExtendFrameIntoClientArea (hWnd, cxLeftWidth, cxRightWidth, cyTopHeight, cyBottomHeight)
-HB_FUNC ( DWMEXTENDFRAMEINTOCLIENTAREA )
-{
-   HWND    hWnd = (HWND) hb_parnl (1);
-   HRESULT nRet = ( HRESULT ) NULL;
-   MARGINS MarInset;
-   
-   MarInset.cxLeftWidth    = (int) hb_parnl (2);
-   MarInset.cxRightWidth   = (int) hb_parnl (3);
-   MarInset.cyTopHeight    = (int) hb_parnl (4);
-   MarInset.cyBottomHeight = (int) hb_parnl (5);
-   
-   if( HMG_DWMAPI() )
-   {
-      func_DwmExtendFrameIntoClientArea pDwmExtendFrameIntoClientArea = ( func_DwmExtendFrameIntoClientArea ) GetProcAddress( hDWMAPI, "DwmExtendFrameIntoClientArea" );
-      if( pDwmExtendFrameIntoClientArea )
-         nRet = ( HRESULT ) pDwmExtendFrameIntoClientArea ( hWnd, &MarInset );
-   }
-   hb_retl( ( nRet == S_OK ) );
-} 
-
-
-HB_FUNC( DRAGACCEPTFILES )
-{
-   DragAcceptFiles( ( HWND ) hb_parnl( 1 ), hb_parl( 2 ) );
-}
-
-HB_FUNC( DRAGQUERYFILE )
-{
-   HDROP hDrop = ( HDROP ) hb_parnl( 1 );
-   TCHAR lpBuffer[ MAX_PATH + 1 ];
-
-   DragQueryFile( hDrop, 0, lpBuffer, MAX_PATH );
-   hb_retc( lpBuffer );
-}
-
-HB_FUNC( DRAGFINISH )
-{
-   DragFinish( (HDROP) hb_parnl( 1 ) );
-}
-
 */
+
 #pragma ENDDUMP
