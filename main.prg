@@ -92,7 +92,11 @@ Function exec_xCom(input_xCom)
 		Catch oExecErr
 
 			if(valtype(oExecErr) == "O")
-				echo("["+ oExecErr:subsystem()+ "/" + alltrim(str(oExecErr:subcode())) + ":" + alltrim(str(oExecErr:gencode())) + "] " + oExecErr:description() + ": " + oExecErr:operation())
+				echo("["+ oExecErr:subsystem()+ "/"			;
+				+ alltrim(str(oExecErr:subcode())) + ":"	;
+				+ alltrim(str(oExecErr:gencode())) + "] "	;
+				+ oExecErr:description() + ": "				;
+				+ oExecErr:operation())
 			//echo("["+oExecErr+"]"
 			endif
 		
