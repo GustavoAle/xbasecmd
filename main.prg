@@ -8,7 +8,7 @@
 FUNCTION Main(cFile)
 	local 	aSeq,;
 			i,;
-			local_xCom := space(64),;
+			local_xCom,;
 			xteste, nCurRow
 	public 	lEcho:=.f.,;
 			output_xReply,;
@@ -17,37 +17,35 @@ FUNCTION Main(cFile)
 			oExecErr
 
 	caret	:=	0
-      If upper(HB_ATOKENS(memoread(cFile),CRLF)[1]) = 'NOGUI' .or. upper(HB_ATOKENS(memoread(cFile),CRLF)[1]) = 'HIDE'
-         lNoGui	:=	.t.
-         //load_fromfile(cFile)
-	  Else   
-		 clear()
+	If upper(HB_ATOKENS(memoread(cFile),CRLF)[1]) = 'NOGUI' .or. upper(HB_ATOKENS(memoread(cFile),CRLF)[1]) = 'HIDE'
+		lNoGui	:=	.t.
+		//load_fromfile(cFile)
+	Else   
+		clear()
 
-		 echo("[ xBase, CA-Clipper and Harbour Command Interpreter ]")
-		 echo("[ Open source. GUI Build: Nov. 5th 2013 ]")
-		 echo("[ Last version: May. 7th 2018 ]")
-		 echo(".")
+		echo("[ xBase, CA-Clipper and Harbour Command Interpreter ]")
+		echo("[ Open source. GUI Build: Nov. 5th 2013 ]")
+		echo("[ Last version: May. 7th 2018 ]")
+		echo(".")
 
-		 output_xReply := "NULL"
-		 i := 0
+		output_xReply := "NULL"
+		i := 0
 
-		 //local_xCom :=  c_scan()
-		 
-		 nCurRow := ROW()
-		 WHILE (!lExit_signal)
+		nCurRow := ROW()
+		WHILE (!lExit_signal)
 
-			nCurRow = ROW()
+		nCurRow = ROW()
 
-			ACCEPT "--> " TO local_xCom
+		ACCEPT "--> " TO local_xCom
 
+		if(!empty(local_xCom))
 			exec_xCom(local_xCom)
 			local_xCom := space(128)
-			//echo(chr(13))
+		Endif
 
-		 ENDDO
-		 */
+		ENDDO
 
-	  Endif   
+	Endif   
 	  
 
 
@@ -60,7 +58,16 @@ FUNCTION echo(input_printchar)
 	endif
 
 	if(valtype(input_printchar) == "C")
-		? input_printchar
+		? alltrim(input_printchar)
+	endif
+
+	
+	if(valtype(input_printchar) == "L")
+		if(input_printchar)
+			? "true"
+		else
+			? "false"
+		endif
 	endif
 
 
@@ -116,31 +123,64 @@ Function exec_xCom(input_xCom)
 
 Return
 
-Function fstep(nStart,nEnd,nStep,aAction)
-Local i,a,cAct
-   if empty(nStart) .and. empty(nEnd)
+Function _fstep(nStart,nEnd,nStep,aAction)
+	Local i,a,cAct
+	if empty(nStart) .and. empty(nEnd)
       RETURN
-   endif
-   if empty(nStep)
+  	 endif
+   	if empty(nStep)
       nStep	:=	1
    endif
    
-   for i	:=	nStart to nEnd Step nStep
-      for a	:=	1 to len(aAction)
-         cAct	:=	aAction[a]
-         Try
-            output_xReply	:=	&cAct
-         Catch
-            echo("[Undefined or wrong: "+alltrim(cAct)+" ]")
-         End 
-      Next a
-   next i
+	for i	:=	nStart to nEnd Step nStep
+		for a	:=	1 to len(aAction)
+			cAct	:=	aAction[a]
+			Try
+				output_xReply	:=	&cAct
+			Catch oExecErr
+				if(valtype(oExecErr) == "O")
+					echo("["+ oExecErr:subsystem()+ "/"			;
+					+ alltrim(str(oExecErr:subcode())) + ":"	;
+					+ alltrim(str(oExecErr:gencode())) + "] "	;
+					+ oExecErr:description() + ": "				;
+					+ oExecErr:operation())
+				//echo("["+oExecErr+"]"
+				endif
+			End 
+		Next a
+	next i
+Return
+
+Function _while(xCondition,aAction)
+	Local i,a,cAct
+
+	if(empty(xCondition) .or. type(xCondition) <> "L")
+		RETURN
+	endif
+   
+	WHILE(&xCondition)
+		for a	:=	1 to len(aAction)
+			cAct	:=	aAction[a]
+			Try
+				output_xReply	:=	&cAct
+			Catch oExecErr
+				if(valtype(oExecErr) == "O")
+					echo("["+ oExecErr:subsystem()+ "/"			;
+					+ alltrim(str(oExecErr:subcode())) + ":"	;
+					+ alltrim(str(oExecErr:gencode())) + "] "	;
+					+ oExecErr:description() + ": "				;
+					+ oExecErr:operation())
+				//echo("["+oExecErr+"]"
+				endif
+			End 
+		Next a
+	ENDDO
+
 Return
 
 Function var( cVarN,xCont)
-Public &cVarN	:=	xCont
+	Public &cVarN	:=	xCont
 Return nil
-
 
 
 Function quit()
@@ -148,12 +188,14 @@ Function quit()
 Return 
 
 ***********************************************************************************************
+***********************************************************************************************
 #pragma BEGINDUMP
 
 #include "hbapi.h"
 #include "hbvm.h"
 #include <stdio.h>
 
+/*
 HB_FUNC (SCANC){
 	char * out = (char*)hb_param(1,0);
 	int eeee;
@@ -168,7 +210,6 @@ HB_FUNC (PRINTC){
 	printf("\n%s",in);
 
 }
-/*
 	Here comes C codes as follow:
 
 HB_FUNC(functionname){
@@ -178,3 +219,5 @@ HB_FUNC(functionname){
 */
 
 #pragma ENDDUMP
+***********************************************************************************************
+***********************************************************************************************
