@@ -85,45 +85,45 @@ Function exec_xCom(input_xCom)
 		echo("[Forced return]")
 		RETURN
 	endif    
-	if type(input_xCom)="U"
+	//if type(input_xCom)="U"
 		//echo(cPrefix+input_xCom)
-		Try 
-			output_xReply	:=	&input_xCom
-		Catch oExecErr
+	Try 
+		output_xReply	:=	&input_xCom
+	Catch oExecErr
 
-			if(valtype(oExecErr) == "O")
-				echo("["+ oExecErr:subsystem()+ "/"			;
-				+ alltrim(str(oExecErr:subcode())) + ":"	;
-				+ alltrim(str(oExecErr:gencode())) + "] "	;
-				+ oExecErr:description() + ": "				;
-				+ oExecErr:operation())
-			//echo("["+oExecErr+"]"
-			endif
-		
-		End
-		if lEcho == .T.
-		cEc := valtype(output_xReply)
-			if cEc == "N"
-				echo(input_xCom+" [=] "+str(output_xReply))
-			endif
-			if cEc == "C"
-				echo(input_xCom+" [=] "+output_xReply)
-			endif
-			if cEc == "A"
-				echo(input_xCom+" [=] ARRAY")
-			endif
-			if cEc == "L"
-				if output_xReply == .t.
-					echo(input_xCom+" [=] .T.")
-				else
-					echo(input_xCom+" [=] .F.")
-				endif	
-			endif
-			output_xReply := nil	
-		endif	
-	elseif !(":=" $ input_xCom)
-		echo("[Undefined or wrong: "+alltrim(input_xCom)+"]")
-	endif   
+		if(valtype(oExecErr) == "O")
+			echo("["+ oExecErr:subsystem()+ "/"			;
+			+ alltrim(str(oExecErr:subcode())) + ":"	;
+			+ alltrim(str(oExecErr:gencode())) + "] "	;
+			+ oExecErr:description() + ": "				;
+			+ oExecErr:operation())
+		//echo("["+oExecErr+"]"
+		endif
+	
+	End
+	if lEcho == .T.
+	cEc := valtype(output_xReply)
+		if cEc == "N"
+			echo(input_xCom+" [=] "+str(output_xReply))
+		endif
+		if cEc == "C"
+			echo(input_xCom+" [=] "+output_xReply)
+		endif
+		if cEc == "A"
+			echo(input_xCom+" [=] ARRAY")
+		endif
+		if cEc == "L"
+			if output_xReply == .t.
+				echo(input_xCom+" [=] .T.")
+			else
+				echo(input_xCom+" [=] .F.")
+			endif	
+		endif
+		output_xReply := nil	
+	endif	
+	//elseif !(":=" $ input_xCom)
+	//	echo("[Undefined or wrong: "+alltrim(input_xCom)+"]")
+	//endif   
 
 Return
 
