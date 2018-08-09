@@ -1,31 +1,36 @@
-﻿#xcommand TRY              => bError	:=	errorBlock( {|oErr| break( oErr ) } ) ;;
+#include <hbclass.ch>
+//#include "classes/math.ch"
+
+#xcommand TRY              => bError	:=	errorBlock( {|oErr| break( oErr ) } ) ;;
 	                                 BEGIN SEQUENCE
 #xcommand CATCH [<!oErr!>] => errorBlock( bError ) ;;
 	                                 RECOVER [USING <oErr>] <-oErr-> ;;
 	                                 errorBlock( bError )
 #define CRLF (Chr(13)+chr(10))
 
+#define XBCMD_VER "1.8.07"
+
 FUNCTION Main(cFile)
-	local 	aSeq,;
+	LOCAL 	aSeq,;
 			i,;
 			local_xCom,;
 			xteste, nCurRow
-	public 	lEcho:=.f.,;
+	PUBLIC 	lEcho:=.f.,;
 			output_xReply,;
 			lExit_signal := .F.,;
 			cPrefix := "--> ",;
 			oExecErr
 
-	caret	:=	0
+	SET COLOR TO "RB/N+"
 	If upper(HB_ATOKENS(memoread(cFile),CRLF)[1]) = 'NOGUI' .or. upper(HB_ATOKENS(memoread(cFile),CRLF)[1]) = 'HIDE'
-		lNoGui	:=	.t.
 		//load_fromfile(cFile)
 	Else   
 		clear()
 
 		echo("[ xBase, CA-Clipper and Harbour Command Interpreter ]")
-		echo("[ Open source. GUI Build: Nov. 5th 2013 ]")
-		echo("[ Last version: May. 7th 2018 ]")
+		echo("[ Open source. GUI Build: Nov. 5th 2013             ]")
+		echo("[ Last version: July 11, 2018 | v1.8.07             ]")
+
 		echo(".")
 
 		output_xReply := "NULL"
@@ -36,7 +41,8 @@ FUNCTION Main(cFile)
 
 		nCurRow = ROW()
 
-		ACCEPT "--> " TO local_xCom
+		ACCEPT cPrefix TO local_xCom
+
 
 		if(!empty(local_xCom))
 			exec_xCom(local_xCom)
@@ -49,10 +55,12 @@ FUNCTION Main(cFile)
 	  
 
 
-RETURN
+RETURN NIL
 
+/*
 FUNCTION echo(input_printchar)
-	//local new_printchar
+	//LOCAL new_printchar
+
 	if valtype(input_printchar) == "N"
 		input_printchar := str(input_printchar)
 	endif
@@ -72,16 +80,29 @@ FUNCTION echo(input_printchar)
 
 
 RETURN
+*/
 
-FUNCTION clear()
+FUNCTION ECHO(...)
+
+	QOUT(...)
+
+RETURN NIL
+
+FUNCTION VERSION()
+
+	QOUT("xBaseCMD v"+ALLTRIM(XBCMD_VER))
+
+RETURN NIL
+
+FUNCTION CLEAR()
 	CLEAR SCREEN
 RETURN
 
-Function exec_xCom(input_xCom)
-	local cEc
+FUNCTION exec_xCom(input_xCom)
+	LOCAL cEc
 
-	if at("INNER_XCOM",upper(input_xCom)) != 0 
-		echo("[Recursive paradox: INNER_XCOM]")
+	if at("INPUT_XCOM",upper(input_xCom)) != 0 
+		echo("[Recursive paradox: INPUT_XCOM]")
 		echo("[Forced return]")
 		RETURN
 	endif    
@@ -125,9 +146,9 @@ Function exec_xCom(input_xCom)
 	//	echo("[Undefined or wrong: "+alltrim(input_xCom)+"]")
 	//endif   
 
-Return
+RETURN
 
-Function _fstep(nStart,nEnd,nStep,aAction)
+FUNCTION _fstep(nStart,nEnd,nStep,aAction)
 	Local i,a,cAct
 	if empty(nStart) .and. empty(nEnd)
       RETURN
@@ -153,9 +174,10 @@ Function _fstep(nStart,nEnd,nStep,aAction)
 			End 
 		Next a
 	next i
-Return
 
-Function _while(xCondition,aAction)
+RETURN
+
+FUNCTION _while(xCondition,aAction)
 	Local i,a,cAct
 
 	if(empty(xCondition) .or. type(xCondition) <> "L")
@@ -180,16 +202,17 @@ Function _while(xCondition,aAction)
 		Next a
 	ENDDO
 
-Return
+RETURN
 
-Function var( cVarN,xCont)
-	Public &cVarN	:=	xCont
-Return nil
+FUNCTION VAR( cDATAN,xCont)
+	PUBLIC &cDATAN	:=	xCont
+RETURN nil
 
 
-Function quit()
+FUNCTION QUIT()
 	lExit_signal := .T.
-Return 
+RETURN 
+
 
 ***********************************************************************************************
 ***********************************************************************************************
@@ -225,3 +248,4 @@ HB_FUNC(functionname){
 #pragma ENDDUMP
 ***********************************************************************************************
 ***********************************************************************************************
+
