@@ -13,3 +13,9 @@ It generate de executable `main`, if you want to compile to C first just do:
 ```
 harbour main.prg
 ```
+
+Here is how the program looks like when you run it.
+![Init screen](imgs/init.png)
+
+And here is a example of coding.
+![Math](imgs/math.png)

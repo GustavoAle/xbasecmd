@@ -1,5 +1,5 @@
 #include <hbclass.ch>
-//#include "classes/math.ch"
+#include "classes/math.ch"
 
 #xcommand TRY              => bError	:=	errorBlock( {|oErr| break( oErr ) } ) ;;
 	                                 BEGIN SEQUENCE

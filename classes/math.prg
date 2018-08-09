@@ -1,15 +1,5 @@
-//#include "math.ch"
+#include "math.ch"
 #include <hbclass.ch>
-
-CREATE CLASS MATH 
-    DATA PI INIT 3.141592653589793 READONLY
-    DATA E  INIT 2.718281828459045 READONLY
-
-    METHOD New()
-    METHOD SQRT()
-
-ENDCLASS
-
 
 METHOD New() CLASS MATH
     set(3,15)
