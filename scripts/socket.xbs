@@ -1,0 +1,7 @@
+echo('Initialized')
+var('s')
+var('b')
+
+s := hb_socketOpen()
+b := hb_socketBind(s, {2,'127.0.0.1',13999})
+l := hb_socketListen(s,10)

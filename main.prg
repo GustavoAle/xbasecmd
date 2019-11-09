@@ -1,4 +1,6 @@
 #include <hbclass.ch>
+#include <hbsocket.ch>
+#include <inkey.ch>
 #include "classes/math.ch"
 
 #xcommand TRY              => bError	:=	errorBlock( {|oErr| break( oErr ) } ) ;;
@@ -8,7 +10,7 @@
 	                                 errorBlock( bError )
 #define CRLF (Chr(13)+chr(10))
 
-#define XBCMD_VER "1.8.07"
+#define XBCMD_VER "1.9.11"
 
 FUNCTION Main(cFile)
 	LOCAL 	aSeq,;
@@ -22,14 +24,15 @@ FUNCTION Main(cFile)
 			oExecErr
 
 	SET COLOR TO "RB/N+"
+	SET KEY K_CTRL_C TO QUIT()
 	If upper(HB_ATOKENS(memoread(cFile),CRLF)[1]) = 'NOGUI' .or. upper(HB_ATOKENS(memoread(cFile),CRLF)[1]) = 'HIDE'
 		//load_fromfile(cFile)
-	Else   
+	Else
 		clear()
 
 		echo("[ xBase, CA-Clipper and Harbour Command Interpreter ]")
 		echo("[ Open source. GUI Build: Nov. 5th 2013             ]")
-		echo("[ Last version: July 11, 2018 | v1.8.07             ]")
+		echo("[ Last version: July 11, 2018 | " + XBCMD_VER+ "              ]")
 
 		echo(".")
 
@@ -51,11 +54,26 @@ FUNCTION Main(cFile)
 
 		ENDDO
 
-	Endif   
-	  
+	Endif
+
 
 
 RETURN NIL
+
+
+PROCEDURE PARSE(cFile)
+	LOCAL aInstructions, i
+
+	aInstructions := HB_ATOKENS(memoread(cFile),CRLF)
+
+	FOR i := 1 TO len(aInstructions)
+		IF(EMPTY(ALLTRIM(aInstructions[i])))
+			LOOP
+		END IF
+		EXEC_XCOM(aInstructions[i])
+	NEXT i
+
+RETURN
 
 /*
 FUNCTION echo(input_printchar)
@@ -69,7 +87,7 @@ FUNCTION echo(input_printchar)
 		? alltrim(input_printchar)
 	endif
 
-	
+
 	if(valtype(input_printchar) == "L")
 		if(input_printchar)
 			? "true"
@@ -101,14 +119,14 @@ RETURN
 FUNCTION exec_xCom(input_xCom)
 	LOCAL cEc
 
-	if at("INPUT_XCOM",upper(input_xCom)) != 0 
-		echo("[Recursive paradox: INPUT_XCOM]")
+	if at("INPUT_XCOM",upper(input_xCom)) != 0
+		echo("[Illegal recursive instruction: INPUT_XCOM]")
 		echo("[Forced return]")
 		RETURN
-	endif    
+	endif
 	//if type(input_xCom)="U"
 		//echo(cPrefix+input_xCom)
-	Try 
+	Try
 		output_xReply	:=	&input_xCom
 	Catch oExecErr
 
@@ -120,7 +138,7 @@ FUNCTION exec_xCom(input_xCom)
 			+ oExecErr:operation())
 		//echo("["+oExecErr+"]"
 		endif
-	
+
 	End
 	if lEcho == .T.
 	cEc := valtype(output_xReply)
@@ -138,13 +156,13 @@ FUNCTION exec_xCom(input_xCom)
 				echo(input_xCom+" [=] .T.")
 			else
 				echo(input_xCom+" [=] .F.")
-			endif	
+			endif
 		endif
-		output_xReply := nil	
-	endif	
+		output_xReply := nil
+	endif
 	//elseif !(":=" $ input_xCom)
 	//	echo("[Undefined or wrong: "+alltrim(input_xCom)+"]")
-	//endif   
+	//endif
 
 RETURN
 
@@ -156,7 +174,7 @@ FUNCTION _fstep(nStart,nEnd,nStep,aAction)
    	if empty(nStep)
       nStep	:=	1
    endif
-   
+
 	for i	:=	nStart to nEnd Step nStep
 		for a	:=	1 to len(aAction)
 			cAct	:=	aAction[a]
@@ -171,7 +189,7 @@ FUNCTION _fstep(nStart,nEnd,nStep,aAction)
 					+ oExecErr:operation())
 				//echo("["+oExecErr+"]"
 				endif
-			End 
+			End
 		Next a
 	next i
 
@@ -183,7 +201,7 @@ FUNCTION _while(xCondition,aAction)
 	if(empty(xCondition) .or. type(xCondition) <> "L")
 		RETURN
 	endif
-   
+
 	WHILE(&xCondition)
 		for a	:=	1 to len(aAction)
 			cAct	:=	aAction[a]
@@ -198,7 +216,7 @@ FUNCTION _while(xCondition,aAction)
 					+ oExecErr:operation())
 				//echo("["+oExecErr+"]"
 				endif
-			End 
+			End
 		Next a
 	ENDDO
 
@@ -211,7 +229,7 @@ RETURN nil
 
 FUNCTION QUIT()
 	lExit_signal := .T.
-RETURN 
+RETURN
 
 
 ***********************************************************************************************
@@ -248,4 +266,3 @@ HB_FUNC(functionname){
 #pragma ENDDUMP
 ***********************************************************************************************
 ***********************************************************************************************
-
