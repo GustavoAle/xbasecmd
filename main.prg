@@ -32,7 +32,7 @@ FUNCTION Main(cFile)
 
 		echo("[ xBase, CA-Clipper and Harbour Command Interpreter ]")
 		echo("[ Open source. GUI Build: Nov. 5th 2013             ]")
-		echo("[ Last version: July 11, 2018 | " + XBCMD_VER+ "              ]")
+		echo("[ Last version: Nov. 09, 2019 | " + XBCMD_VER+ "              ]")
 
 		echo(".")
 
@@ -40,6 +40,13 @@ FUNCTION Main(cFile)
 		i := 0
 
 		nCurRow := ROW()
+
+		IF(file(cFile))
+			parse(cFile)
+			echo("[-----File parsed-----]")
+		END IF
+
+
 		WHILE (!lExit_signal)
 
 		nCurRow = ROW()
