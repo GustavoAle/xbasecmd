@@ -1,6 +1,6 @@
 #include <hbclass.ch>
 #include <hbsocket.ch>
-#include <inkey.ch>
+/*#include <inkey.ch>*/
 #include "classes/math.ch"
 
 #xcommand TRY              => bError	:=	errorBlock( {|oErr| break( oErr ) } ) ;;
@@ -10,62 +10,7 @@
 	                                 errorBlock( bError )
 #define CRLF (Chr(13)+chr(10))
 
-/*
-FUNCTION Main(cFile)
-	LOCAL 	aSeq,;
-			i,;
-			local_xCom,;
-			xteste, nCurRow
-	PUBLIC 	lEcho:=.f.,;
-			output_xReply,;
-			lExit_signal := .F.,;
-			cPrefix := "--> ",;
-			oExecErr
-
-	SET COLOR TO "RB/N+"
-	SET KEY K_CTRL_C TO QUIT()
-	If upper(HB_ATOKENS(memoread(cFile),CRLF)[1]) = 'NOGUI' .or. upper(HB_ATOKENS(memoread(cFile),CRLF)[1]) = 'HIDE'
-		//load_fromfile(cFile)
-	Else
-		clear()
-
-		ECHO("[ xBase, CA-Clipper and Harbour Command Interpreter ]")
-		ECHO("[ Open source. GUI Build: Nov. 5th 2013             ]")
-		ECHO("[ Last version: Nov. 09, 2019 | " + XBCMD_VER+ "              ]")
-
-		ECHO(".")
-
-		output_xReply := "NULL"
-		i := 0
-
-		nCurRow := ROW()
-
-		IF(file(cFile))
-			PARSE_FROM_FILE(cFile)
-			ECHO("[-----File parsed-----]")
-		END IF
-
-
-		WHILE (!lExit_signal)
-
-		nCurRow = ROW()
-
-		ACCEPT cPrefix TO local_xCom
-
-
-		if(!EMPTY(local_xCom))
-			EXEC_XCOM(local_xCom)
-			local_xCom := space(128)
-		Endif
-
-		ENDDO
-
-	Endif
-
-RETURN NIL
-*/
-
-PROCEDURE _INIT()
+PROCEDURE _INITVARS()
 	PUBLIC 	lEcho:=.f.,;
 		output_xReply,;
 		lExit_signal := .F.,;
@@ -75,12 +20,6 @@ PROCEDURE _INIT()
 	output_xReply := "NULL"
 
 RETURN 
-
-/*
-PROCEDURE TEST()
-	PRINTC("HELLO WORLD")
-RETURN 
-*/
 
 PROCEDURE PARSE_FROM_FILE(cFile)
 	LOCAL aInstructions, i
@@ -96,10 +35,9 @@ PROCEDURE PARSE_FROM_FILE(cFile)
 
 RETURN
 
-FUNCTION ECHO(...)
+FUNCTION ECHO(cMsg)
 
-	//QOUT(...)
-	PRINTC(...)
+	PRINTC(cMsg)
 
 RETURN NIL
 
@@ -224,9 +162,15 @@ FUNCTION VAR( cDATAN,xCont)
 RETURN nil
 
 
-FUNCTION QUIT()
-	lExit_signal := .T.
+PROCEDURE QUIT()
+	C_EXIT()
 RETURN
+
+
+PROCEDURE EXIT()
+	C_EXIT()
+RETURN
+
 
 
 ***********************************************************************************************
@@ -246,10 +190,10 @@ char *xbs_parse(const char *input)
 
 	pInput = hb_itemPutC( NULL, (const char*)input );
 	char HbFuncName[]  = "EXEC_XCOM";
-	//printf("Pointer: %p",(void*)pInput);
-
+	
 	pResult = hb_itemDoC( HbFuncName, 1, (PHB_ITEM) pInput);
 	sResult = hb_itemGetC( pResult );
+	
 	hb_itemRelease( pInput );
 
     return sResult ;
@@ -264,26 +208,22 @@ void test_from_c(void)
 
 	char HbFuncName[]  = "VERSION";
 	hb_itemDoC( HbFuncName, 0);
+
+}
+
+HB_FUNC (C_EXIT){
+	exit(0);
 }
 
 HB_FUNC (PRINTC){
 	char * in = (char*)hb_parc(1);
 
-	printf("\n%s",in);
+	printf("%s\n",in);
 
 }
+
+
 /*
-
-HB_FUNC (SCANC){
-	char * out = (char*)hb_param(1,0);
-	int eeee;
-	scanf("%d",&eeee);
-	scanf("%[^\n]s",out);
-
-	hb_retc(out);
-}
-
-
 	Here comes C codes as follow:
 
 HB_FUNC(functionname){
