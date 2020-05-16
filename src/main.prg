@@ -10,8 +10,7 @@
 	                                 errorBlock( bError )
 #define CRLF (Chr(13)+chr(10))
 
-#define XBCMD_VER "1.9.11"
-
+/*
 FUNCTION Main(cFile)
 	LOCAL 	aSeq,;
 			i,;
@@ -30,11 +29,11 @@ FUNCTION Main(cFile)
 	Else
 		clear()
 
-		echo("[ xBase, CA-Clipper and Harbour Command Interpreter ]")
-		echo("[ Open source. GUI Build: Nov. 5th 2013             ]")
-		echo("[ Last version: Nov. 09, 2019 | " + XBCMD_VER+ "              ]")
+		ECHO("[ xBase, CA-Clipper and Harbour Command Interpreter ]")
+		ECHO("[ Open source. GUI Build: Nov. 5th 2013             ]")
+		ECHO("[ Last version: Nov. 09, 2019 | " + XBCMD_VER+ "              ]")
 
-		echo(".")
+		ECHO(".")
 
 		output_xReply := "NULL"
 		i := 0
@@ -42,8 +41,8 @@ FUNCTION Main(cFile)
 		nCurRow := ROW()
 
 		IF(file(cFile))
-			parse(cFile)
-			echo("[-----File parsed-----]")
+			PARSE_FROM_FILE(cFile)
+			ECHO("[-----File parsed-----]")
 		END IF
 
 
@@ -54,8 +53,8 @@ FUNCTION Main(cFile)
 		ACCEPT cPrefix TO local_xCom
 
 
-		if(!empty(local_xCom))
-			exec_xCom(local_xCom)
+		if(!EMPTY(local_xCom))
+			EXEC_XCOM(local_xCom)
 			local_xCom := space(128)
 		Endif
 
@@ -63,12 +62,27 @@ FUNCTION Main(cFile)
 
 	Endif
 
-
-
 RETURN NIL
+*/
 
+PROCEDURE _INIT()
+	PUBLIC 	lEcho:=.f.,;
+		output_xReply,;
+		lExit_signal := .F.,;
+		cPrefix := "--> ",;
+		oExecErr
 
-PROCEDURE PARSE(cFile)
+	output_xReply := "NULL"
+
+RETURN 
+
+/*
+PROCEDURE TEST()
+	PRINTC("HELLO WORLD")
+RETURN 
+*/
+
+PROCEDURE PARSE_FROM_FILE(cFile)
 	LOCAL aInstructions, i
 
 	aInstructions := HB_ATOKENS(memoread(cFile),CRLF)
@@ -82,40 +96,16 @@ PROCEDURE PARSE(cFile)
 
 RETURN
 
-/*
-FUNCTION echo(input_printchar)
-	//LOCAL new_printchar
-
-	if valtype(input_printchar) == "N"
-		input_printchar := str(input_printchar)
-	endif
-
-	if(valtype(input_printchar) == "C")
-		? alltrim(input_printchar)
-	endif
-
-
-	if(valtype(input_printchar) == "L")
-		if(input_printchar)
-			? "true"
-		else
-			? "false"
-		endif
-	endif
-
-
-RETURN
-*/
-
 FUNCTION ECHO(...)
 
-	QOUT(...)
+	//QOUT(...)
+	PRINTC(...)
 
 RETURN NIL
 
 FUNCTION VERSION()
 
-	QOUT("xBaseCMD v"+ALLTRIM(XBCMD_VER))
+	ECHO("xBaseCMD v"+ALLTRIM(XBCMD_VER))
 
 RETURN NIL
 
@@ -123,62 +113,62 @@ FUNCTION CLEAR()
 	CLEAR SCREEN
 RETURN
 
-FUNCTION exec_xCom(input_xCom)
+FUNCTION EXEC_XCOM(input_xCom)
 	LOCAL cEc
 
-	if at("INPUT_XCOM",upper(input_xCom)) != 0
-		echo("[Illegal recursive instruction: INPUT_XCOM]")
-		echo("[Forced return]")
+	if AT("INPUT_XCOM",upper(input_xCom)) != 0
+		ECHO("[Illegal recursive instruction: INPUT_XCOM]")
+		ECHO("[Forced return]")
 		RETURN
 	endif
-	//if type(input_xCom)="U"
-		//echo(cPrefix+input_xCom)
+	//if TYPE(input_xCom)="U"
+		//ECHO(cPrefix+input_xCom)
 	Try
 		output_xReply	:=	&input_xCom
 	Catch oExecErr
 
 		if(valtype(oExecErr) == "O")
-			echo("["+ oExecErr:subsystem()+ "/"			;
-			+ alltrim(str(oExecErr:subcode())) + ":"	;
-			+ alltrim(str(oExecErr:gencode())) + "] "	;
+			ECHO("["+ oExecErr:subsystem()+ "/"			;
+			+ ALLTRIM(STR(oExecErr:subcode())) + ":"	;
+			+ ALLTRIM(STR(oExecErr:gencode())) + "] "	;
 			+ oExecErr:description() + ": "				;
 			+ oExecErr:operation())
-		//echo("["+oExecErr+"]"
+		//ECHO("["+oExecErr+"]"
 		endif
 
 	End
 	if lEcho == .T.
 	cEc := valtype(output_xReply)
 		if cEc == "N"
-			echo(input_xCom+" [=] "+str(output_xReply))
+			ECHO(input_xCom+" [=] "+STR(output_xReply))
 		endif
 		if cEc == "C"
-			echo(input_xCom+" [=] "+output_xReply)
+			ECHO(input_xCom+" [=] "+output_xReply)
 		endif
 		if cEc == "A"
-			echo(input_xCom+" [=] ARRAY")
+			ECHO(input_xCom+" [=] ARRAY")
 		endif
 		if cEc == "L"
 			if output_xReply == .t.
-				echo(input_xCom+" [=] .T.")
+				ECHO(input_xCom+" [=] .T.")
 			else
-				echo(input_xCom+" [=] .F.")
+				ECHO(input_xCom+" [=] .F.")
 			endif
 		endif
 		output_xReply := nil
 	endif
 	//elseif !(":=" $ input_xCom)
-	//	echo("[Undefined or wrong: "+alltrim(input_xCom)+"]")
+	//	ECHO("[Undefined or wrong: "+ALLTRIM(input_xCom)+"]")
 	//endif
 
 RETURN
 
-FUNCTION _fstep(nStart,nEnd,nStep,aAction)
+FUNCTION _FSTEP(nStart,nEnd,nStep,aAction)
 	Local i,a,cAct
-	if empty(nStart) .and. empty(nEnd)
+	if EMPTY(nStart) .and. EMPTY(nEnd)
       RETURN
   	 endif
-   	if empty(nStep)
+   	if EMPTY(nStep)
       nStep	:=	1
    endif
 
@@ -189,12 +179,12 @@ FUNCTION _fstep(nStart,nEnd,nStep,aAction)
 				output_xReply	:=	&cAct
 			Catch oExecErr
 				if(valtype(oExecErr) == "O")
-					echo("["+ oExecErr:subsystem()+ "/"			;
-					+ alltrim(str(oExecErr:subcode())) + ":"	;
-					+ alltrim(str(oExecErr:gencode())) + "] "	;
+					ECHO("["+ oExecErr:subsystem()+ "/"			;
+					+ ALLTRIM(STR(oExecErr:subcode())) + ":"	;
+					+ ALLTRIM(STR(oExecErr:gencode())) + "] "	;
 					+ oExecErr:description() + ": "				;
 					+ oExecErr:operation())
-				//echo("["+oExecErr+"]"
+				//ECHO("["+oExecErr+"]"
 				endif
 			End
 		Next a
@@ -202,10 +192,10 @@ FUNCTION _fstep(nStart,nEnd,nStep,aAction)
 
 RETURN
 
-FUNCTION _while(xCondition,aAction)
+FUNCTION _WHILE(xCondition,aAction)
 	Local i,a,cAct
 
-	if(empty(xCondition) .or. type(xCondition) <> "L")
+	if(EMPTY(xCondition) .or. TYPE(xCondition) <> "L")
 		RETURN
 	endif
 
@@ -216,12 +206,12 @@ FUNCTION _while(xCondition,aAction)
 				output_xReply	:=	&cAct
 			Catch oExecErr
 				if(valtype(oExecErr) == "O")
-					echo("["+ oExecErr:subsystem()+ "/"			;
-					+ alltrim(str(oExecErr:subcode())) + ":"	;
-					+ alltrim(str(oExecErr:gencode())) + "] "	;
+					ECHO("["+ oExecErr:subsystem()+ "/"			;
+					+ ALLTRIM(STR(oExecErr:subcode())) + ":"	;
+					+ ALLTRIM(STR(oExecErr:gencode())) + "] "	;
 					+ oExecErr:description() + ": "				;
 					+ oExecErr:operation())
-				//echo("["+oExecErr+"]"
+				//ECHO("["+oExecErr+"]"
 				endif
 			End
 		Next a
@@ -245,15 +235,35 @@ RETURN
 
 #include "hbapi.h"
 #include "hbvm.h"
+#include <hbapiitm.h>
 #include <stdio.h>
 
-/*
-HB_FUNC (SCANC){
-	char * out = (char*)hb_param(1,0);
-	int eeee;
-	scanf("%d",&eeee);
-	scanf("%[^\n]s",out);
+char *xbs_parse(const char *input)
+{
+    PHB_ITEM pResult;
+    char *sResult;
+	PHB_ITEM pInput;
 
+	pInput = hb_itemPutC( NULL, (const char*)input );
+	char HbFuncName[]  = "EXEC_XCOM";
+	//printf("Pointer: %p",(void*)pInput);
+
+	pResult = hb_itemDoC( HbFuncName, 1, (PHB_ITEM) pInput);
+	sResult = hb_itemGetC( pResult );
+	hb_itemRelease( pInput );
+
+    return sResult ;
+}
+
+void xbs_call_proc(const char *input){
+	hb_itemDoC(input, 0);
+}
+
+void test_from_c(void)
+{
+
+	char HbFuncName[]  = "VERSION";
+	hb_itemDoC( HbFuncName, 0);
 }
 
 HB_FUNC (PRINTC){
@@ -262,6 +272,18 @@ HB_FUNC (PRINTC){
 	printf("\n%s",in);
 
 }
+/*
+
+HB_FUNC (SCANC){
+	char * out = (char*)hb_param(1,0);
+	int eeee;
+	scanf("%d",&eeee);
+	scanf("%[^\n]s",out);
+
+	hb_retc(out);
+}
+
+
 	Here comes C codes as follow:
 
 HB_FUNC(functionname){
