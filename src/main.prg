@@ -1,7 +1,10 @@
 #include <hbclass.ch>
 #include <hbsocket.ch>
+//#include <hbapicom.h>
 /*#include <inkey.ch>*/
 #include "classes/math.ch"
+
+//#require "hbcomm"
 
 #xcommand TRY              => bError	:=	errorBlock( {|oErr| break( oErr ) } ) ;;
 	                                 BEGIN SEQUENCE
@@ -18,6 +21,7 @@ PROCEDURE _INITVARS()
 		oExecErr
 
 	output_xReply := "NULL"
+	//setbuffer()
 
 RETURN 
 
@@ -37,7 +41,11 @@ RETURN
 
 FUNCTION ECHO(cMsg)
 
-	PRINTC(cMsg)
+	IF(VALTYPE(cMsg) <> "C")
+		PRINTC(str(cMsg))
+	ELSE
+		PRINTC(cMsg)
+	ENDIF
 
 RETURN NIL
 
@@ -182,6 +190,8 @@ RETURN
 #include <hbapiitm.h>
 #include <stdio.h>
 
+//char stdout_second_buffer[1921];
+
 char *xbs_parse(const char *input)
 {
     PHB_ITEM pResult;
@@ -210,6 +220,16 @@ void test_from_c(void)
 	hb_itemDoC( HbFuncName, 0);
 
 }
+/*
+HB_FUNC (SETBUFFER){
+	stdout_second_buffer[0] = '\0';
+	setbuf(stdout,stdout_second_buffer);
+}
+
+HB_FUNC (GETBUFFER){
+	hb_retc(stdout_second_buffer);
+}
+*/
 
 HB_FUNC (C_EXIT){
 	exit(0);
